@@ -1,6 +1,6 @@
 mode: 'train'  # 'eval'
+
 modality: 'audio'
-AV_fusion: 'cat'
 
 wav:
   sr: 32000 

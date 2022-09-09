@@ -59,7 +59,6 @@ class ACT(nn.Module):
         dropout = 0.2
 
         self.modality = config.modality
-        self.AV_fusion = config.AV_fusion
         
         # Build audio encoder (denoted as encoder here)
         self.encoder = AudioTransformer(patch_size,
