@@ -175,7 +175,7 @@ parser = argparse.ArgumentParser(description='Settings for ACT training')
 
 parser.add_argument('-n', '--exp_name', type=str, default='exp1', help='name of the experiment')
 parser.add_argument('-m', '--modality', type=str, default='audio', help='input modality')
-parser.add_argument('-v', '--video_encoder', type=str, default='S3D', help='type of video encoder')
+parser.add_argument('-v', '--video_features', type=str, default='S3D', help='type of video features')
 
 
 
@@ -184,7 +184,7 @@ args = parser.parse_args()
 config = get_config()
 
 config.modality = args.modality
-config.video_encoder.model = args.video_encoder
+config.video_features = args.video_features
 
 setup_seed(config.training.seed)
 
