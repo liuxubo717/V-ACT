@@ -26,7 +26,10 @@ To prepare the dataset:
 * The default setting is for 'ACT_m_scratch'
 * Run experiments: `python train.py -m audio -n exp_name`
 * Set the parameters you want in `settings/settings.yaml`
-* Modality: 1) audio 2) video 3) audio-visual [only audio available now]
+* Modality [only audio available now]: 
+  * audio 
+  * video 
+  * audio-visual 
 #### Pretrained encoder
 
 We provide two pretrained encoders, one is a pretrained DeiT model, another is the DeiT model pretrained on AudioSet.
