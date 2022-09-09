@@ -60,20 +60,6 @@ class ACT(nn.Module):
 
         self.modality = config.modality
         self.AV_fusion = config.AV_fusion
-        # Build video encoder
-        if config.video_encoder.model == 'I3D':
-            self.video_encoder = InceptionI3d(400, in_channels=3)
-        elif config.video_encoder.model == 'S3D':
-            self.video_encoder = S3D(400)
-        if config.video_encoder.pretrained:
-            if config.video_encoder.model == 'I3D':
-                self.video_encoder.load_state_dict(torch.load('pretrained_models/rgb_imagenet.pt'))
-            elif config.video_encoder.model == 'S3D':
-                self.video_encoder = load_S3D_weight(self.video_encoder)
-
-        if config.video_encoder.freeze:
-            for name, p in self.video_encoder.named_parameters():
-                p.requires_grad = False
         
         # Build audio encoder (denoted as encoder here)
         self.encoder = AudioTransformer(patch_size,
@@ -133,24 +119,18 @@ class ACT(nn.Module):
         mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
         return mask
 
-    def encode(self, audio, video):
+    def encode(self, audio, video_features):
         """
         Args:
             audio: spectrogram, batch x time x n_mels
-            video: batch x channel x time x H x W
+            video: batch x time x 1024
         """
         if self.modality == 'audio':
             src = self.encoder(audio)  # batch x time x 527
             src = F.relu_(self.encoder_linear(src))  # batch x time x nhid
             src = src.transpose(0, 1)  # time x batch x nhid
         else:
-            b, c, t, h, w = video.size() # t=250
-            video = video.view(b, c, 10, 25, h ,w)
-            src = self.video_encoder.extract_features(video[:, :, 0, :, :, :]) # batch x time x 1024
-            for i in range(1, 10):
-                next_src = self.video_encoder.extract_features(video[:, :, i, :, :, :])
-                src = torch.cat((src, next_src), dim=1)
-            src = F.relu_(self.video_encoder_linear(src))  # batch x time x nhid
+            src = F.relu_(self.video_encoder_linear(video_features))  # batch x time x nhid
 
             if self.modality == 'audio_visual':
                 src_a = self.encoder(audio)  # batch x time x 527
@@ -181,10 +161,10 @@ class ACT(nn.Module):
 
         return output
 
-    def forward(self, audio, video, tgt, input_mask=None, target_mask=None, target_padding_mask=None):
+    def forward(self, audio, video_features, tgt, input_mask=None, target_mask=None, target_padding_mask=None):
         # src: spectrogram
 
-        encoded_feats = self.encode(audio, video)
+        encoded_feats = self.encode(audio, video_features)
         output = self.decode(encoded_feats, tgt,
                              input_mask=input_mask,
                              target_mask=target_mask,

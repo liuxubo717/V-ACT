@@ -1,16 +1,14 @@
 mode: 'train'  # 'eval'
 modality: 'audio'
 AV_fusion: 'cat'
+
 wav:
   sr: 32000 
   window_length: 1024
   hop_length: 640 
   n_mels: 64
 
-video_encoder:
-  model: 'S3D'  
-  freeze: Yes
-  pretrained: Yes
+video_features: 'S3D'
 
 audio_encoder:
   model: 'audioset'  # 'deit'

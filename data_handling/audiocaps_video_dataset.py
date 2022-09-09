@@ -21,7 +21,7 @@ class AudioCapsVideoDataset(Dataset):
     def __init__(self, config):
         super(AudioCapsVideoDataset, self).__init__()
 
-        self.h5_path = '/fsx/xuboliu/data/AudioCaps/hdf5s/train/train.h5'
+        self.h5_path = 'data/hdf5s/train/train.h5'
         vocabulary_path = 'data/pickles/words_list.p'
         with h5py.File(self.h5_path, 'r') as hf:
             self.audio_names = [audio_name.decode() for audio_name in hf['audio_name'][:]]
@@ -33,14 +33,12 @@ class AudioCapsVideoDataset(Dataset):
         self.window_length = config.wav.window_length
         self.hop_length = config.wav.hop_length
         self.n_mels = config.wav.n_mels
-
-        self.video_npz_dir = '/fsx/xuboliu/data/AudioCaps/video_npz'
+        
+        if config.video_features == 'S3D':
+            self.video_features_dir = 'data/video_features/S3D_25frames'
+        elif config.video_features == 'I3D':
+            self.video_features_dir = 'data/video_features/I3D_25frames'
         self.modality=config.modality
-
-        # self.video_dir = '/data/home/xuboliu/project/ACT/data/videos_25fps'
-        # transform_chain = [ToTensorVideo()]
-        # self.video_transform = transforms.Compose(transform_chain)
-        # decord.bridge.set_bridge("torch")
 
     def __len__(self):
         return len(self.audio_names)
@@ -59,38 +57,15 @@ class AudioCapsVideoDataset(Dataset):
         words = caption.strip().split()
         target = np.array([self.vocabulary.index(word) for word in words])
         target_len = len(target)
-        # video_name = audio_name[:-4] + '.mp4'
-        # video_path = os.path.join(self.video_dir, video_name)
-        # vr = decord.VideoReader(video_path, height=224, width=224)
-        # video_tensor = self.video_transform(vr.get_batch(range(0, len(vr)))) # [3, T, 256, 256]
-        # if video_tensor.size()[1] > 250:
-        #     video_tensor = video_tensor[:, :250, :, :]
-        # elif video_tensor.size()[1] < 250:
-        #     video_tensor = pad(video_tensor, 250, 1)
+
         if self.modality == 'audio':
-            video_frames = feature
+            video_features = feature
         else:
             video_name = audio_name[:-4] + '.npz'
-            video_path = os.path.join(self.video_npz_dir, video_name)
-            video_frames = np.load(video_path)['video_frames']
-            video_frames = video_frames.astype(np.float32)
-            video_frames = video_frames / 255.0
-            video_frames = video_frames * 2 - 1
-
-            # fold = index // 100
-            # num = index - 100*fold
-            # with h5py.File(f'/fsx/xuboliu/data/AudioCaps/video_hdf5s/train/train_{str(fold)}.h5', 'r') as hf_sub_train:
-            #     video_name = hf_sub_train['video_name'][num].decode()
-            #     assert audio_name[:-4] == video_name[:-4]
-
-            #     video_frames = hf_sub_train['video_frames'][num]
-            #     video_frames = video_frames.astype(np.float32)
-            #     video_frames = video_frames / 255.0
-            #     video_frames = video_frames * 2 - 1
-
-            
-
-        return feature, target, target_len, audio_name, caption, video_frames
+            video_path = os.path.join(self.video_features_dir, video_name)
+            video_features = np.load(video_path)['features']
+ 
+        return feature, target, target_len, audio_name, caption, video_features
 
     def resample(self, waveform):
         """Resample.
@@ -114,11 +89,9 @@ class AudioCapsVideoEvalDataset(Dataset):
     def __init__(self, split, config):
 
         if split == 'val':
-            self.h5_path = '/fsx/xuboliu/data/AudioCaps/hdf5s/val/val.h5'
-            self.h5_video_path = '/fsx/xuboliu/data/AudioCaps/video_hdf5s/val/val.h5'
+            self.h5_path = 'data/hdf5s/val/val.h5'
         elif split == 'test':
-            self.h5_path = '/fsx/xuboliu/data/AudioCaps/hdf5s/test/test.h5'
-            self.h5_video_path = '/fsx/xuboliu/data/AudioCaps/video_hdf5s/test/test.h5'
+            self.h5_path = 'data/hdf5s/test/test.h5'
         with h5py.File(self.h5_path, 'r') as hf:
             self.audio_names = [audio_name.decode() for audio_name in hf['audio_name'][:]]
             self.captions = [caption for caption in hf['caption'][:]]
@@ -127,14 +100,15 @@ class AudioCapsVideoEvalDataset(Dataset):
         self.window_length = config.wav.window_length
         self.hop_length = config.wav.hop_length
         self.n_mels = config.wav.n_mels
-        self.modality=config.modality
 
         self.caption_field = ['caption_{}'.format(i) for i in range(1, 6)]
 
-        self.video_npz_dir = '/fsx/xuboliu/data/AudioCaps/video_npz'
-        # transform_chain = [ToTensorVideo()]
-        # self.video_transform = transforms.Compose(transform_chain)
-        # decord.bridge.set_bridge("torch")
+        if config.video_features == 'S3D':
+            self.video_features_dir = 'data/video_features/S3D_25frames'
+        elif config.video_features == 'I3D':
+            self.video_features_dir = 'data/video_features/I3D_25frames'
+        self.modality=config.modality
+
 
     def __len__(self):
         return len(self.audio_names)
@@ -154,29 +128,14 @@ class AudioCapsVideoEvalDataset(Dataset):
         feature = librosa.power_to_db(feature).T
         feature = feature[:-1, :]
 
-        # video_name = audio_name[:-4] + '.npz'
-        # video_path = os.path.join(self.video_npz_dir, video_name)
-        # video_frames = np.load(video_path)['video_frames']
         if self.modality == 'audio':
             video_frames = feature
         else:
             video_name = audio_name[:-4] + '.npz'
-            video_path = os.path.join(self.video_npz_dir, video_name)
-            video_frames = np.load(video_path)['video_frames']
-            video_frames = video_frames.astype(np.float32)
-            video_frames = video_frames / 255.0
-            video_frames = video_frames * 2 - 1
-            
-            # with h5py.File(self.h5_video_path, 'r') as hf_sub_train:
-            #     video_name = hf_sub_train['video_name'][index].decode()
-            #     assert audio_name[:-4] == video_name[:-4]
+            video_path = os.path.join(self.video_features_dir, video_name)
+            video_features = np.load(video_path)['features']
 
-            #     video_frames = hf_sub_train['video_frames'][index]
-            #     video_frames = video_frames.astype(np.float32)
-            #     video_frames = video_frames / 255.0
-            #     video_frames = video_frames * 2 - 1
-
-        return feature, target_dict, audio_name, video_frames
+        return feature, target_dict, audio_name, video_features
 
     def resample(self, waveform):
         """Resample.
