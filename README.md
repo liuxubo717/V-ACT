@@ -5,7 +5,7 @@ This repository contains source code for our paper [Audio Captioning Transformer
 * All of our experiments are running on RTX 30 series GPUs with CUDA11. This environment may just work for RTX 30x GPUs.
 ## Set up dataset
 All the experiments were carried out on AudioCaps dataset, which is sourced from AudioSet.
-Our download version contains 49274/49837 audio clips in training set, 494/495 audio clips in validation set, 957/975 audio clips in test set.
+Our download version （video available) contains 47745/49837 audio clips in training set, 480/495 audio clips in validation set, 928/975 audio clips in test set.
 
 For reproducibility, our downloaded version can be accessed at: 
 * [Baidu](https://pan.baidu.com/s/1DkGsfQ0aM6lx6Gf6gCyrVw) password: a1p4 
