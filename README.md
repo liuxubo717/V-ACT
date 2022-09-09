@@ -1,4 +1,4 @@
-# Audio Captioning Transformer
+# Visually-Aware Audio Captioning Transformer (V-ACT)
 This repository contains source code for our paper [Audio Captioning Transformer](https://dcase.community/documents/workshop2021/proceedings/DCASE2021Workshop_Mei_68.pdf).
 ## Set up environment
 * Create a conda environment with dependencies: `conda env create -f environment.yml -n name`
