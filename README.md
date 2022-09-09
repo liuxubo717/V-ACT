@@ -24,9 +24,9 @@ To prepare the dataset:
 ### Training
 
 * The default setting is for 'ACT_m_scratch'
-* Run experiments: `python train.py -n exp_name`
+* Run experiments: `python train.py -m audio -n exp_name`
 * Set the parameters you want in `settings/settings.yaml`
-
+* Modality: 1) audio 2) video 3) audio-visual [only audio available now]
 #### Pretrained encoder
 
 We provide two pretrained encoders, one is a pretrained DeiT model, another is the DeiT model pretrained on AudioSet.
@@ -34,14 +34,14 @@ We provide two pretrained encoders, one is a pretrained DeiT model, another is t
 2. [DeiT model pretrained on AudioSet](https://drive.google.com/file/d/1QgQLbeBHwly5UN_V15mSJZ812h6QIgFe/view?usp=sharing)
 
 To use pretrained encoder:
-* Download the pretrained encoder models and put them under the directory `pretrained_models`
+* Download the pretrained encoder model and put it under the directory `pretrained_models`
 * Set settings in `settings/settings,yaml`
-  * set `encoder.model:` to 'deit' or 'audioset'
+  * set `encoder.model:` to 'audioset'
   * set `encoder.pretrained` to 'Yes'
-  * set `path.encoder` to the model path, e.g. 'pretrained_models/deit.pth'
+  * set `path.encoder` to the model path, e.g. 'pretrained_models/audioset_deit.pth'
 * Run experiments
 
-### Reproducible results
+### Reproducible results (TBD)
 
 As we have refactored the code and made some improvements after the DECASE workshop, there are little differences among the reproducible results and those reported in the paper (the metrics are higher now), the conclusions are the same.
 
