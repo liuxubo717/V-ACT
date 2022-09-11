@@ -12,9 +12,13 @@
 #SBATCH --output=/data/home/xuboliu/slurm/out/%j_%t_log.out
 export HYDRA_FULL_ERROR=1
 source /data/home/xuboliu/miniconda/etc/profile.d/conda.sh;conda activate ACT
-cd /data/home/xuboliu/project/ACT/
-srun python train.py -m audio_visual -n ACT-S3D -v S3D
-# srun python train.py -m audio_visual -n ACT-I3D -v I3D
+cd /data/home/xuboliu/project/V-ACT/
+srun python train.py -m audio_visual -v I3D_25frames -n ACT-I3D_25frames
+
+
+
+
+
 
 
 

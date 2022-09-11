@@ -34,11 +34,8 @@ class AudioCapsVideoDataset(Dataset):
         self.hop_length = config.wav.hop_length
         self.n_mels = config.wav.n_mels
         
-        if config.video_features == 'S3D':
-            self.video_features_dir = 'data/video_features/S3D_25frames'
-        elif config.video_features == 'I3D':
-            self.video_features_dir = 'data/video_features/I3D_25frames'
         self.modality=config.modality
+        self.video_features_dir = f'data/video_features/{config.video_features}'
 
     def __len__(self):
         return len(self.audio_names)
@@ -103,10 +100,7 @@ class AudioCapsVideoEvalDataset(Dataset):
 
         self.caption_field = ['caption_{}'.format(i) for i in range(1, 6)]
 
-        if config.video_features == 'S3D':
-            self.video_features_dir = 'data/video_features/S3D_25frames'
-        elif config.video_features == 'I3D':
-            self.video_features_dir = 'data/video_features/I3D_25frames'
+        self.video_features_dir = f'data/video_features/{config.video_features}'
         self.modality=config.modality
 
 

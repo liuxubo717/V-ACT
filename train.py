@@ -175,7 +175,7 @@ parser = argparse.ArgumentParser(description='Settings for ACT training')
 
 parser.add_argument('-n', '--exp_name', type=str, default='exp1', help='name of the experiment')
 parser.add_argument('-m', '--modality', type=str, default='audio', help='input modality')
-parser.add_argument('-v', '--video_features', type=str, default='S3D', help='type of video features')
+parser.add_argument('-v', '--video_features', type=str, default='S3D_25frames', help='type of video features')
 
 
 

@@ -8,7 +8,7 @@ wav:
   hop_length: 640 
   n_mels: 64
 
-video_features: 'S3D'
+video_features: 'S3D_25frames'
 
 audio_encoder:
   model: 'audioset'  # 'deit'

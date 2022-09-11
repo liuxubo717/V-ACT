@@ -39,6 +39,7 @@ class S3D(nn.Module):
         return logits
     def extract_features(self, x):
         y = self.base(x)
+        import pdb; pdb.set_trace()
         y = F.avg_pool3d(y, (2, y.size(3), y.size(4)), stride=1)
         embedding = y.squeeze(3).squeeze(3)
         return embedding.permute(0, 2, 1)
