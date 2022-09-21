@@ -7,4 +7,4 @@
 from tools.dataset import pack_wavs_to_hdf5, pack_wavs_with_videos_to_hdf5
 
 if __name__ == '__main__':
-    pack_wavs_with_videos_to_hdf5()
+    pack_wavs_to_hdf5()
