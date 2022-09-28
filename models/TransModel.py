@@ -113,6 +113,12 @@ class ACT(nn.Module):
                                                              config.path.word2vec,
                                                              self.nhid)
 
+        self.Linear1 = nn.Sequential(
+            nn.LayerNorm(embed_dim),
+            nn.Linear(embed_dim, 1024),
+            nn.ReLU(),
+            nn.Dropout(p=dropout)
+        )
     def generate_square_subsequent_mask(self, sz):
         mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
         mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
@@ -126,7 +132,7 @@ class ACT(nn.Module):
         """
         if self.modality == 'audio':
             src = self.encoder(audio)  # batch x time x 527
-            src = F.relu_(self.encoder_linear(src))  # batch x time x nhid
+            src = F.relu_(self.encoder_linear(self.Linear1(src)))  # batch x time x nhid
             src = src.transpose(0, 1)  # time x batch x nhid
         else:
             src = F.relu_(self.video_encoder_linear(video_features))  # batch x time x nhid
